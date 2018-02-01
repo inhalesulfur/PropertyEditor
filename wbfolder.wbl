@@ -1,0 +1,11 @@
+PropertyEditor.qext;
+PropertyEditor.js;
+core/d3.js;
+core/moment.js;
+core/codemirror.js;
+core/codemirror.css;
+core/ui.js;
+core/ui.css;
+core/qe.js;
+PropertyEditor.m.js;
+PropertyEditor.css

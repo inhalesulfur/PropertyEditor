@@ -1,0 +1,21 @@
+[d3ui-module=PropertyEditor].hide{
+    display:none;
+}
+[d3ui-module=PropertyEditor][d3ui-factory=ExtensionLayout][d3ui-node=wrap]{
+    height:100%;
+    overflow:auto;
+}
+[d3ui-module=PropertyEditor][d3ui-factory=ExtensionLayout][d3ui-node=apps],
+[d3ui-module=PropertyEditor][d3ui-factory=ExtensionLayout][d3ui-node=sheets],
+[d3ui-module=PropertyEditor][d3ui-factory=ExtensionLayout][d3ui-node=objects]{
+    //height:33%;
+}
+[d3ui-module=PropertyEditor][d3ui-factory=EditorLayout][d3ui-node=head]{
+    height:30px;
+    display:flex;
+    align-items:center;
+}
+[d3ui-module=PropertyEditor][d3ui-factory=EditorLayout][d3ui-node=body]{
+    //height:calc(100% - 30px);
+    overflow:auto;
+}
