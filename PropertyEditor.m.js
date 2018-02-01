@@ -1,19 +1,19 @@
 // JavaScript
 define([
-	"qlik",
-	"./core/d3",
-	"./core/ui",
-	"./core/qe"
+    "qlik",
+    "./core/d3",
+    "./core/ui",
+    "./core/qe"
 ],function (
-	qlik,
-	d3,
-	ui,
-	QlikEngine
+    qlik,
+    d3,
+    ui,
+    QlikEngine
 ) {
     'use strict';
-	var origin = location.host;
-	function Model(){
-		var apps = new Apps;
+    var origin = location.host;
+    function Model(){
+        var apps = new Apps;
         var sheets = new PropertyList({
         });
         sheets.on("load.setDefaultSheet", function(){
@@ -48,10 +48,10 @@ define([
         this.apps = apps;
         this.sheets = sheets;
         this.objects = objects;
-	}
+    }
     function Apps(){
         var currApp = qlik.currApp();
-		var api = new QlikEngine();
+        var api = new QlikEngine();
         var dispatch = d3.dispatch("reload", "load", "selectstream", "openapp", "selectapp", "error");
         /**
          * Метод для подписки на события
@@ -74,7 +74,7 @@ define([
         var currentApp;
         this.update = function(){
             dispatch.call("reload");
-			api.GetDocList().then(function(reply){
+            api.GetDocList().then(function(reply){
                 apps.concat(reply.qDocList);
                 streams = streamNest.entries(reply.qDocList).map(function(d, i){
                     var stream = d.values[0].qMeta.stream || {name:"Personal"};
@@ -88,14 +88,14 @@ define([
                     return stream;
                 });
                 var currStream = apps.get(currApp.id).stream;
-				selectStream(currStream.index);
-				dispatch.call("load");
-			})
-		}
+                selectStream(currStream.index);
+                dispatch.call("load");
+            })
+        }
         this.selectStream = selectStream;
         function selectStream(index){
             currentStream = streams[index];
-			dispatch.call("selectstream");
+            dispatch.call("selectstream");
             var appIndex = 0;
             if (currentStream.apps.map.has(currApp.id)) 
                 appIndex = currentStream.apps.map.get(currApp.id);
@@ -111,7 +111,7 @@ define([
             var qDocId = currentApp.qDocId;
             dispatch.call("selectapp");
             currentApp.api.OpenDoc(currentApp.qDocId).then(openApp)
-			.catch(function(e){
+            .catch(function(e){
                 dispatch.call("error", new ModelError(e));
             });
             function openApp(){
@@ -194,28 +194,28 @@ define([
                 })
                 dispatch.call("load", properties);
             })
-			.catch(function(e){
+            .catch(function(e){
                 dispatch.call("error", new ModelError(e));
             });
         }
-		this.setProperties = function(d){
-			var id = d.qId;
-			api.SetObjectProperties(id, d.qProp)
-			.catch(function(e){
+        this.setProperties = function(d){
+            var id = d.qId;
+            api.SetObjectProperties(id, d.qProp)
+            .catch(function(e){
                 dispatch.call("error", new ModelError(e));
             });
-		}
-		this.getProperties = function(d){
-			var id = d.qId;
-			api.GetObjectProperties(id)
-			.then(function(reply){
-				d.qProp = reply.qProp;
+        }
+        this.getProperties = function(d){
+            var id = d.qId;
+            api.GetObjectProperties(id)
+            .then(function(reply){
+                d.qProp = reply.qProp;
                 dispatch.call("load", properties);
-			})
-			.catch(function(e){
+            })
+            .catch(function(e){
                 dispatch.call("error", new ModelError(e));
             });
-		}
+        }
         Object.defineProperty(this, "properties", {
             get:function() { return properties}
         });

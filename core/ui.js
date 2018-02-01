@@ -1,28 +1,28 @@
 define([
-	"./d3",
-	"./moment",
-	"./codemirror",
-	"./javascript",
-	"css!./codemirror.css",
+    "./d3",
+    "./moment",
+    "./codemirror",
+    "./javascript",
+    "css!./codemirror.css",
     "css!./ui.css"
 ],function (
-	d3,
+    d3,
     moment,
     codemirror
 ) {
-	"use strict";
+    "use strict";
     var undefined;
     window.px = "px";
     patchD3(d3);
-	var ui = new uiCore();
+    var ui = new uiCore();
     ui.nodes = new uiNodes();
     ui.templates = new uiTemplates();
     ui.utils = new uiUtils();
     ui.models = new uiModels();
     ui.icons = new uiIcons();
     ui.events = new uiEvents();
-	ui.symbols = new uiSymbols();
-	ui.dev = new uiDev();
+    ui.symbols = new uiSymbols();
+    ui.dev = new uiDev();
     ui.math = new uiMath();
     var uiNode = ui.Node;
     var uiTemplate = ui.Template;
@@ -35,7 +35,7 @@ define([
         function IdGenerator(){
             var id = 0;
             this.getId = function(){ id++; return id; }
-        }	
+        }    
         function uiDefinition(){
             this.property = {};
             this.attr = {};
@@ -109,7 +109,7 @@ define([
         uiArray.prototype = new Array;
         uiArray.prototype.each = uiArray.prototype.forEach;
         function uiNode(nodeDef){
-			nodeDef || (nodeDef = {});
+            nodeDef || (nodeDef = {});
             var undefined;
             this.node = nodeDef.node || "div";
             this.ref = nodeDef.ref;
@@ -154,7 +154,7 @@ define([
         }
         function uiTemplate(templateDef){
             templateDef || (templateDef = {});
-			this.factory = templateDef.factory || "uiTemplate";
+            this.factory = templateDef.factory || "uiTemplate";
             this.module = templateDef.module;
             this.model = {};
             this.elements = new uiCollection();
@@ -163,39 +163,39 @@ define([
             this.update = update.bind(this);
             this.exit = exit.bind(this);
             this.updateRef = updateRef.bind(this);
-			function enter(uiParentNode){
-				if (typeof uiParentNode.selection === "undefined") {
-					if (uiParentNode.d3element)  uiParentNode.selection = uiParentNode.d3element
-					else uiParentNode.selection = d3.select(uiParentNode);
-				}
-					
-				if (this.id){
-					this.exit();
-				}
-				this.id = templateIdGen.getId();
-				bindParent.call(this, uiParentNode);
-				createElements(templateDef, uiParentNode, this.elements);
+            function enter(uiParentNode){
+                if (typeof uiParentNode.selection === "undefined") {
+                    if (uiParentNode.d3element)  uiParentNode.selection = uiParentNode.d3element
+                    else uiParentNode.selection = d3.select(uiParentNode);
+                }
+                    
+                if (this.id){
+                    this.exit();
+                }
+                this.id = templateIdGen.getId();
+                bindParent.call(this, uiParentNode);
+                createElements(templateDef, uiParentNode, this.elements);
                 callTemplateDispatch("enter");
-			}
-			function update(config){
-				if (typeof this.id === "undefined") return;
-				joinElements(templateDef, this.parent, this.elements);
-				updateElements(this.parent, this.elements, config);
-				if (config){
-					if (config.updateChildComponents)
-						this.updateChildComponents({updateChildComponents:true});
-				}
-			}
-			function exit(){
-				if (this.id){
-					this.elements.each(releaseNode);
-					delete this.parent.childComponents[this.id];
-					delete this.id;
-				}
+            }
+            function update(config){
+                if (typeof this.id === "undefined") return;
+                joinElements(templateDef, this.parent, this.elements);
+                updateElements(this.parent, this.elements, config);
+                if (config){
+                    if (config.updateChildComponents)
+                        this.updateChildComponents({updateChildComponents:true});
+                }
+            }
+            function exit(){
+                if (this.id){
+                    this.elements.each(releaseNode);
+                    delete this.parent.childComponents[this.id];
+                    delete this.id;
+                }
                 callTemplateDispatch("exit");
-			}	
-		}
-		var templateDispatch = d3.dispatch(
+            }    
+        }
+        var templateDispatch = d3.dispatch(
             "enter",    //событие создания шаблона (template.enter()) 
             "update",   //событие обновления шаблона (template.update())
             "exit"      //событие очистки шаблона (template.exit())
@@ -206,192 +206,192 @@ define([
             update:undefined,
             exit:undefined
         }
-		uiTemplate.on = templateDispatch.on.bind(templateDispatch);	
-		function callTemplateDispatch(event){
-			clearTimeout(timeouts[event]);
-			timeouts[event] = setTimeout(function(){
-				templateDispatch.call(event);
-			}, 0);
-		}
-		function releaseNode(node){
-			if (node instanceof ui.Array){
-				node.each(releaseNode);
-			}
-			else {
-				node.childs.each(releaseNode);
-				node.selection.each(function(){
-					if (this.childComponents){
-						this.childComponents.each(function(item) { item.exit() })
-						delete this.childComponents;
-					}
-				})
-				node.selection.remove();
-				if (node.childComponents){
-					node.childComponents.each(function(item) { item.exit() })
-					delete node.childComponents; 
-				}
-				delete node.parent; 
-			}
-		}
-		function updateRef(){
-			var self = this;
-			this.elements.each(function(element){
-				updateNodeRef(element);
-			});
-			function updateNodeRef(node){
-				if (node.ref){
-					self.ref.addElement(node.ref, node);
-				}
-				if (node instanceof ui.Array){
-					node.each(function(element){
-						updateNodeRef(element);
-					});
-				}
-				else {
-					node.childs.each(function(element){
-						updateNodeRef(element);
-					});
-				}                    
-			}
-		}        
-		
-		function uiAttr(templateDef, element, el, ind){
-			var moduleName = templateDef.module;
-			var factoryName = templateDef.factory;
-			var attr = {};
-			if (moduleName) attr["d3ui-module"] = moduleName;
-			if (factoryName) attr["d3ui-factory"] = factoryName;
-			if (el) attr["d3ui-node"] = el;
-			if (ind) attr["d3ui-index"] = ind;
-			if (element.id) attr["d3ui-id"] = element.id;
-			return { attr:attr }
-		}
-		function createElements(templateDef, parentElement, elements){
-			elements.each(function(element, el){
-				appendElement(element, el);
-			})
-			function appendElement(element, el, ind){
-				if (element instanceof ui.Array && typeof ind === "undefined"){
-					element.each(function(item, i){
-						appendElement(element, el, i);
-					})
-					return;
-				}
-				else if (element instanceof ui.Array) element = element[ind];
-				element.parent = parentElement;
-				element.id = nodeIdGen.getId();
-				element.key = el;
-				element.selector = element.node + "[d3ui-id='"+element.id+"']";
-				
-				if (element.data.array) {
-					element.type = "join";
-					var selection = parentElement.selection;
-					var join = selection.selectAll(element.selector).data(element.data.array, element.data.key);
-					
-					element.exited = join.exit();
-					exitElement(element, true);
-					
-					element.entered = join.enter().append(element.node)
-						.applyAll(element.enter)
-						.applyAll(uiAttr(templateDef, element, el, ind));
-					if (element.entered && element.entered.nodes().length) {
-						element.on.enter && element.on.enter.call(element);
+        uiTemplate.on = templateDispatch.on.bind(templateDispatch);    
+        function callTemplateDispatch(event){
+            clearTimeout(timeouts[event]);
+            timeouts[event] = setTimeout(function(){
+                templateDispatch.call(event);
+            }, 0);
+        }
+        function releaseNode(node){
+            if (node instanceof ui.Array){
+                node.each(releaseNode);
+            }
+            else {
+                node.childs.each(releaseNode);
+                node.selection.each(function(){
+                    if (this.childComponents){
+                        this.childComponents.each(function(item) { item.exit() })
+                        delete this.childComponents;
+                    }
+                })
+                node.selection.remove();
+                if (node.childComponents){
+                    node.childComponents.each(function(item) { item.exit() })
+                    delete node.childComponents; 
+                }
+                delete node.parent; 
+            }
+        }
+        function updateRef(){
+            var self = this;
+            this.elements.each(function(element){
+                updateNodeRef(element);
+            });
+            function updateNodeRef(node){
+                if (node.ref){
+                    self.ref.addElement(node.ref, node);
+                }
+                if (node instanceof ui.Array){
+                    node.each(function(element){
+                        updateNodeRef(element);
+                    });
+                }
+                else {
+                    node.childs.each(function(element){
+                        updateNodeRef(element);
+                    });
+                }                    
+            }
+        }        
+        
+        function uiAttr(templateDef, element, el, ind){
+            var moduleName = templateDef.module;
+            var factoryName = templateDef.factory;
+            var attr = {};
+            if (moduleName) attr["d3ui-module"] = moduleName;
+            if (factoryName) attr["d3ui-factory"] = factoryName;
+            if (el) attr["d3ui-node"] = el;
+            if (ind) attr["d3ui-index"] = ind;
+            if (element.id) attr["d3ui-id"] = element.id;
+            return { attr:attr }
+        }
+        function createElements(templateDef, parentElement, elements){
+            elements.each(function(element, el){
+                appendElement(element, el);
+            })
+            function appendElement(element, el, ind){
+                if (element instanceof ui.Array && typeof ind === "undefined"){
+                    element.each(function(item, i){
+                        appendElement(element, el, i);
+                    })
+                    return;
+                }
+                else if (element instanceof ui.Array) element = element[ind];
+                element.parent = parentElement;
+                element.id = nodeIdGen.getId();
+                element.key = el;
+                element.selector = element.node + "[d3ui-id='"+element.id+"']";
+                
+                if (element.data.array) {
+                    element.type = "join";
+                    var selection = parentElement.selection;
+                    var join = selection.selectAll(element.selector).data(element.data.array, element.data.key);
+                    
+                    element.exited = join.exit();
+                    exitElement(element, true);
+                    
+                    element.entered = join.enter().append(element.node)
+                        .applyAll(element.enter)
+                        .applyAll(uiAttr(templateDef, element, el, ind));
+                    if (element.entered && element.entered.nodes().length) {
+                        element.on.enter && element.on.enter.call(element);
                         callTemplateDispatch("update");
-					}
-					
-					element.selection = element.entered.merge(join);
-				}
-				else {
-					if (parentElement.type == "join"){
-						element.type = "join";
-						element.entered = parentElement.entered.append(element.node)
-							.applyAll(element.enter)
-							.applyAll(uiAttr(templateDef, element, el, ind));
-						if (element.entered && element.entered.nodes().length) {
-							element.on.enter && element.on.enter.call(element);
+                    }
+                    
+                    element.selection = element.entered.merge(join);
+                }
+                else {
+                    if (parentElement.type == "join"){
+                        element.type = "join";
+                        element.entered = parentElement.entered.append(element.node)
+                            .applyAll(element.enter)
+                            .applyAll(uiAttr(templateDef, element, el, ind));
+                        if (element.entered && element.entered.nodes().length) {
+                            element.on.enter && element.on.enter.call(element);
                             callTemplateDispatch("update");
-						}
-						element.selection = parentElement.selection.select(element.selector);
-					}
-					else{
-						element.type = "element";
-						element.selection = parentElement.selection.append(element.node)
-							.applyAll(element.enter)
-							.applyAll(uiAttr(templateDef, element, el, ind));
-						element.entered = element.selection;
-						if (element.entered && element.entered.nodes().length) {
-							element.on.enter && element.on.enter.call(element);
+                        }
+                        element.selection = parentElement.selection.select(element.selector);
+                    }
+                    else{
+                        element.type = "element";
+                        element.selection = parentElement.selection.append(element.node)
+                            .applyAll(element.enter)
+                            .applyAll(uiAttr(templateDef, element, el, ind));
+                        element.entered = element.selection;
+                        if (element.entered && element.entered.nodes().length) {
+                            element.on.enter && element.on.enter.call(element);
                             callTemplateDispatch("update");
-						}
-					}
-				}
-				
-				if (element.datum.array){
-					element.selection.datum(element.datum.array).applyAll(element.datum.update);
-				}
-				createElements(templateDef, element, element.childs);   		
-			};
-		};
-		function exitElement(element, top){
-			if (typeof element.exited === "undefined" || element.exited.nodes().length === 0) return;
-			if (typeof element.exited === "undefined") element.exited = element.parent.exited.select(element.selector);
-			if (element.childComponents) element.childComponents.each(function(item) { item.elements.each(exitElement)});
-			element.childs.each(exitElement);
-			if (element.exited && element.exited.nodes().length) {
-				element.on.exit && element.on.exit.call(element);
-			}
-			if (top === true) element.exited.remove();
-			delete element.exited;
-			
-			callTemplateDispatch("update");
-		}
-		function joinElements(templateDef, parentElement, elements){
-			elements.each(function(element, el){
-				joinElement(element, el);
-			})
-			function joinElement(element, el, ind){
-				if (element instanceof ui.Array && typeof ind === "undefined"){
-					element.each(function(item, i){
-						joinElement(element, el, i);
-					})
-					return;
-				}
-				else if (element instanceof ui.Array) element = element[ind];
-				if (element.data.array){
-					var selection = parentElement.selection;
-					var data = selection.selectAll(element.selector).data(element.data.array, element.data.key);
-					
-					element.exited = data.exit();
-					exitElement(element, true);
-					
-					element.entered = data.enter().append(element.node)
-						.applyAll(element.enter)
-						.applyAll(uiAttr(templateDef, element, el, ind));
-					if (element.entered && element.entered.nodes().length) {
-						element.on.enter && element.on.enter.call(element);
+                        }
+                    }
+                }
+                
+                if (element.datum.array){
+                    element.selection.datum(element.datum.array).applyAll(element.datum.update);
+                }
+                createElements(templateDef, element, element.childs);           
+            };
+        };
+        function exitElement(element, top){
+            if (typeof element.exited === "undefined" || element.exited.nodes().length === 0) return;
+            if (typeof element.exited === "undefined") element.exited = element.parent.exited.select(element.selector);
+            if (element.childComponents) element.childComponents.each(function(item) { item.elements.each(exitElement)});
+            element.childs.each(exitElement);
+            if (element.exited && element.exited.nodes().length) {
+                element.on.exit && element.on.exit.call(element);
+            }
+            if (top === true) element.exited.remove();
+            delete element.exited;
+            
+            callTemplateDispatch("update");
+        }
+        function joinElements(templateDef, parentElement, elements){
+            elements.each(function(element, el){
+                joinElement(element, el);
+            })
+            function joinElement(element, el, ind){
+                if (element instanceof ui.Array && typeof ind === "undefined"){
+                    element.each(function(item, i){
+                        joinElement(element, el, i);
+                    })
+                    return;
+                }
+                else if (element instanceof ui.Array) element = element[ind];
+                if (element.data.array){
+                    var selection = parentElement.selection;
+                    var data = selection.selectAll(element.selector).data(element.data.array, element.data.key);
+                    
+                    element.exited = data.exit();
+                    exitElement(element, true);
+                    
+                    element.entered = data.enter().append(element.node)
+                        .applyAll(element.enter)
+                        .applyAll(uiAttr(templateDef, element, el, ind));
+                    if (element.entered && element.entered.nodes().length) {
+                        element.on.enter && element.on.enter.call(element);
                         callTemplateDispatch("update");
-					}
-					
-					element.selection = element.entered.merge(data);
-				}
-				else if (parentElement.type === "join"){
+                    }
+                    
+                    element.selection = element.entered.merge(data);
+                }
+                else if (parentElement.type === "join"){
                     var selectionChanged = checkSelectionChanged(parentElement.selection["_groups"], element.selection["_groups"]);
                     if (selectionChanged){
                         element.entered = parentElement.entered.append(element.node)
-						.applyAll(element.enter)
-						.applyAll(uiAttr(templateDef, element, el, ind));
+                        .applyAll(element.enter)
+                        .applyAll(uiAttr(templateDef, element, el, ind));
                         if (element.entered && element.entered.nodes().length) {
                             element.on.enter && element.on.enter.call(element);
                             callTemplateDispatch("update");
                         }
                     }
                     element.selection = parentElement.selection.select(element.selector);
-				}
+                }
                 else{
                     element.selection = parentElement.selection.select(element.selector);
                 }
-				joinElements(templateDef, element, element.childs);
-			}
+                joinElements(templateDef, element, element.childs);
+            }
             function checkSelectionChanged(parentGroup, nodeGroup){
                 if (parentGroup.length != nodeGroup.length) return true;
                 var changed = false;
@@ -402,36 +402,36 @@ define([
                 }
                 return changed;
             }
-		}
-		function updateElements(parentElement, elements, config){
-			if (typeof config === "undefined") config = {};
-			elements.each(function(element, el){
-				updateElement(element, el);
-			})
-			function updateElement(element, el, ind){
-				if (element instanceof ui.Array && typeof ind === "undefined"){
-					element.each(function(item, i){
-						updateElement(element, el, i);
-					})
-					return;
-				}
-				else if (element instanceof ui.Array) element = element[ind];
-				if (element.datum.array && typeof element.data.array === "undefined"){
-					element.selection.datum(function(){
-						return this.parentNode["__data__"];
-					})
-				}
-				var selection = element.selection;
-				if (config.transition)	selection = selection.transition(config.transition);
-				selection.applyAll(element.update);
-				
-				if (element.datum.array){
-					selection.datum(element.datum.array).applyAll(element.datum.update);
-				}
-				if (element.on.update && element.selection.nodes().length) element.on.update.call(element);
-				updateElements(element, element.childs, config);
-			}
-		}
+        }
+        function updateElements(parentElement, elements, config){
+            if (typeof config === "undefined") config = {};
+            elements.each(function(element, el){
+                updateElement(element, el);
+            })
+            function updateElement(element, el, ind){
+                if (element instanceof ui.Array && typeof ind === "undefined"){
+                    element.each(function(item, i){
+                        updateElement(element, el, i);
+                    })
+                    return;
+                }
+                else if (element instanceof ui.Array) element = element[ind];
+                if (element.datum.array && typeof element.data.array === "undefined"){
+                    element.selection.datum(function(){
+                        return this.parentNode["__data__"];
+                    })
+                }
+                var selection = element.selection;
+                if (config.transition)    selection = selection.transition(config.transition);
+                selection.applyAll(element.update);
+                
+                if (element.datum.array){
+                    selection.datum(element.datum.array).applyAll(element.datum.update);
+                }
+                if (element.on.update && element.selection.nodes().length) element.on.update.call(element);
+                updateElements(element, element.childs, config);
+            }
+        }
     }
     function uiEvents(){
         this.disableEvents = disableEvents;
@@ -442,7 +442,7 @@ define([
                 target.classList.add( 'disableEvents' )
             }
             target.uiTimer = setTimeout( function() {
-                target.classList.remove( 'disableEvents' )	
+                target.classList.remove( 'disableEvents' )    
                 delete target.uiTimer;
             }, 500 );
         }
@@ -630,7 +630,7 @@ define([
         this.SelectBox = SelectBox;
         //this.DropButton = DropButton;
         this.ReqursiveObject = ReqursiveObject;
-		this.ReqursiveXml = ReqursiveXml;
+        this.ReqursiveXml = ReqursiveXml;
         this.animations = new AnimationTemplates();
         this.placeholders = new Placeholders();
         
@@ -663,8 +663,8 @@ define([
             self.ref.drop.enter.style.display = "none";
             self.ref.drop.update.style.display = function(){ return display?"block":"none" };
             self.getDisplay = getDisplay;
-            self.toogle = toogle;	
-            self.show = show;	
+            self.toogle = toogle;    
+            self.show = show;    
             self.hide = hide;
 
             function getDisplay(){
@@ -719,22 +719,22 @@ define([
         function ReqursiveObject(config){ 
             config || (config = {});
             config.constructors || (config.constructors = {});
-			var showConstructor = config.showConstructor || false;
-			var showPrototype = config.showPrototype || false;
-			var constructors = {
-				Object:config.constructors.Object || ReqursiveObject,
-				Array:config.constructors.Array || ReqursiveObject,
-				Function:config.constructors.Function || FunctionListing,
-				Primitive:config.constructors.Primitive || Primitive
-			}
-			config.constructors = constructors;
-			var ObjectConstructor = config.ObjectConstructor || ReqursiveObject;
-			var ArrayConstructor = config.ArrayConstructor || ReqursiveObject;
-			var PrimitiveConstructor = config.PrimitiveConstructor || Primitive;
+            var showConstructor = config.showConstructor || false;
+            var showPrototype = config.showPrototype || false;
+            var constructors = {
+                Object:config.constructors.Object || ReqursiveObject,
+                Array:config.constructors.Array || ReqursiveObject,
+                Function:config.constructors.Function || FunctionListing,
+                Primitive:config.constructors.Primitive || Primitive
+            }
+            config.constructors = constructors;
+            var ObjectConstructor = config.ObjectConstructor || ReqursiveObject;
+            var ArrayConstructor = config.ArrayConstructor || ReqursiveObject;
+            var PrimitiveConstructor = config.PrimitiveConstructor || Primitive;
             var data = config.data; 
             ui.Template.call(this, {factory:config.factory || "ReqursiveObject"}); 
             this.elements.wrap = new ui.Node({ref:"wrap"}); 
-			this.elements.wrap.childs.fields = new ui.Node({ref:"fields"}); 
+            this.elements.wrap.childs.fields = new ui.Node({ref:"fields"}); 
             this.elements.wrap.childs.fields.childs.arrow = new ui.Node({node:"span", ref:"arrow"}); 
             this.elements.wrap.childs.fields.childs.key = new ui.Node({node:"span", ref:"key"}); 
             this.elements.wrap.childs.fields.childs.separator = new ui.Node({node:"span", ref:"separator"}); 
@@ -762,7 +762,7 @@ define([
                 data = config.data || data; 
                 baseUpdate.call(this); 
             }; 
-			this.ref.separator.enter.html = ":";
+            this.ref.separator.enter.html = ":";
             this.ref.constructor.update.html = function(d, i) { 
                 var html = ""; 
                 if (d.value instanceof Array) return html+= "Array ("+d.value.length + ")"; 
@@ -780,36 +780,36 @@ define([
                 return ""; 
             } 
             this.ref.fields.data.array = function(d){ 
-				var sourceData;
-				if (data) sourceData = data;
-				else if (d) sourceData = d.value;
+                var sourceData;
+                if (data) sourceData = data;
+                else if (d) sourceData = d.value;
                 var targetArray = [];
                 if (sourceData instanceof Array) { 
-					var partitionSize = 100;
-					if (sourceData.length > partitionSize){
-						var partition = new Partition;
-						var partitions = [];
-						for (var i = 0; i < sourceData.length; i++){
-							partition[i] = data[i];
-							if (!((i+1)%partitionSize)){
-								var start = i - partitionSize + 1;
-								var end = i;
-								partitions.push({start:start, end:end, partition:partition})
-								partition = new Partition;
-							}
-							else if (i === sourceData.length - 1){
-								var start = i-i%partitionSize;
-								var end = i;
-								partitions.push({start:start, end:end, partition:partition})
-								partition = new Partition;
-							}
-						}
-                    	targetArray = partitions.map(function(d, i) { return {key:"["+d.start+"..."+d.end+"]", value:d.partition, sourceData:sourceData}});
-						
-					}
-					else{
-                    	targetArray = sourceData.map(function(d, i) { return {key:i, value:d, sourceData:sourceData}});
-					} 
+                    var partitionSize = 100;
+                    if (sourceData.length > partitionSize){
+                        var partition = new Partition;
+                        var partitions = [];
+                        for (var i = 0; i < sourceData.length; i++){
+                            partition[i] = data[i];
+                            if (!((i+1)%partitionSize)){
+                                var start = i - partitionSize + 1;
+                                var end = i;
+                                partitions.push({start:start, end:end, partition:partition})
+                                partition = new Partition;
+                            }
+                            else if (i === sourceData.length - 1){
+                                var start = i-i%partitionSize;
+                                var end = i;
+                                partitions.push({start:start, end:end, partition:partition})
+                                partition = new Partition;
+                            }
+                        }
+                        targetArray = partitions.map(function(d, i) { return {key:"["+d.start+"..."+d.end+"]", value:d.partition, sourceData:sourceData}});
+                        
+                    }
+                    else{
+                        targetArray = sourceData.map(function(d, i) { return {key:i, value:d, sourceData:sourceData}});
+                    } 
                 } 
                 else{ 
                     for (var i in sourceData){ 
@@ -817,12 +817,12 @@ define([
                             targetArray.push({key:i, value:sourceData[i], sourceData:sourceData}) 
                     } 
                 } 
-				if (showPrototype && typeof sourceData == "function"){
-					targetArray.push({key:"__proto__", value:sourceData.prototype, sourceData:sourceData});
-				}
-				else if (showConstructor && sourceData && sourceData.constructor){
-					targetArray.push({key:"__constructor__", value:sourceData.constructor, sourceData:sourceData});
-				}
+                if (showPrototype && typeof sourceData == "function"){
+                    targetArray.push({key:"__proto__", value:sourceData.prototype, sourceData:sourceData});
+                }
+                else if (showConstructor && sourceData && sourceData.constructor){
+                    targetArray.push({key:"__constructor__", value:sourceData.constructor, sourceData:sourceData});
+                }
                 return targetArray; 
             }
             function Partition(){};
@@ -831,15 +831,15 @@ define([
                 if (d.value instanceof Object){ 
                     if (valueDom.uiChild instanceof HiddenObject){ 
                         valueDom.uiChild.exit(); 
-						if (typeof d.value == "function"){
-							valueDom.uiChild = new constructors.Function(config);
-						}
-						else if (d.value instanceof Array){ 
-							valueDom.uiChild = new constructors.Array(config);
-						}
-						else{
-							valueDom.uiChild = new constructors.Object(config); 
-						}
+                        if (typeof d.value == "function"){
+                            valueDom.uiChild = new constructors.Function(config);
+                        }
+                        else if (d.value instanceof Array){ 
+                            valueDom.uiChild = new constructors.Array(config);
+                        }
+                        else{
+                            valueDom.uiChild = new constructors.Object(config); 
+                        }
                         valueDom.uiChild.enter(valueDom); 
                         valueDom.uiChild.update();
                         valueDom.style.display = "block";
@@ -878,19 +878,19 @@ define([
             this.ref.value.on.update = function(){ 
                 this.selection.each(function(d, i){ 
                     if (typeof d.value == "function"){
-						if (this.uiChild instanceof constructors.Function){
+                        if (this.uiChild instanceof constructors.Function){
                             this.uiChild.update();
-						}
-						else{
-							this.uiChild.exit(); 
+                        }
+                        else{
+                            this.uiChild.exit(); 
                             this.uiChild = new HiddenObject(); 
                             this.uiChild.enter(this); 
                             this.uiChild.update();
                             this.style.display = "inline-block"; 
                             d3.select(this.parentNode).select(arrowNode.selector).html(ui.symbols.utf8.arrow.right); 
-						}
-					}
-					else if (d.value instanceof Object){
+                        }
+                    }
+                    else if (d.value instanceof Object){
                         if (this.uiChild instanceof constructors.Primitive || this.uiChild instanceof constructors.Function){
                             this.uiChild.exit(); 
                             this.uiChild = new HiddenObject(); 
@@ -902,23 +902,23 @@ define([
                         else if (this.uiChild instanceof HiddenObject){
                             this.uiChild.update(); 
                         }
-						else{
-							if (d.value instanceof Array && !(this.uiChild instanceof constructors.Array)){
-								this.uiChild.exit(); 
-								this.uiChild = new constructors.Array(config);
-								this.uiChild.enter(this); 
-								this.uiChild.update();
-							}
-							else if (!(this.uiChild instanceof constructors.Object)){
-								this.uiChild.exit(); 
-								this.uiChild = new constructors.Object(config);
-								this.uiChild.enter(this); 
-								this.uiChild.update();
-							}
-							else {
-								this.uiChild.update();
-							}
-						}
+                        else{
+                            if (d.value instanceof Array && !(this.uiChild instanceof constructors.Array)){
+                                this.uiChild.exit(); 
+                                this.uiChild = new constructors.Array(config);
+                                this.uiChild.enter(this); 
+                                this.uiChild.update();
+                            }
+                            else if (!(this.uiChild instanceof constructors.Object)){
+                                this.uiChild.exit(); 
+                                this.uiChild = new constructors.Object(config);
+                                this.uiChild.enter(this); 
+                                this.uiChild.update();
+                            }
+                            else {
+                                this.uiChild.update();
+                            }
+                        }
                     } 
                     else{ 
                         if (this.uiChild instanceof constructors.Primitive){
@@ -944,7 +944,7 @@ define([
             this.ref.content.update.html = function(d) { return "..." }; 
             var baseUpdate = this.update; 
             this.update = function(config){ 
-				config || (config = {});
+                config || (config = {});
                 data = config.data; 
                 baseUpdate.call(this); 
             }; 
@@ -958,23 +958,23 @@ define([
             this.updateRef(); 
             var baseUpdate = this.update; 
             this.update = function(config){
-				config || (config = {});
+                config || (config = {});
                 data = config.data; 
                 baseUpdate.call(this); 
             }; 
         }
         
-		function FunctionListing(config){
+        function FunctionListing(config){
             var mirrowConfig = {
                 lineNumbers:true,
-				readOnly:true,
+                readOnly:true,
                 mode:"javascript"
             };
             ui.templates.ReqursiveObject.call(this, config);
-			var listing = new ui.Node({ref:"listing"});
-			this.elements.listing = listing;
-			this.updateRef();
-			listing.on.enter = function(){
+            var listing = new ui.Node({ref:"listing"});
+            this.elements.listing = listing;
+            this.updateRef();
+            listing.on.enter = function(){
                 this.entered.each(createMirrow)
             }
             listing.on.update = function(){
@@ -987,7 +987,7 @@ define([
                     
                 })
             }
-			function createMirrow(d, i){
+            function createMirrow(d, i){
                 var inputNode = d3.select(this);
                 inputNode.html("");
                 var textarea = inputNode.append("textarea").node();
@@ -995,8 +995,8 @@ define([
                 uiEditor.setValue(d.value.toString());
                 inputNode.uiEditor = uiEditor;
             }
-		}
-		
+        }
+        
         this.ObjectEditor = ObjectEditor;
         /**
          * Редактор объекта
@@ -1218,17 +1218,17 @@ define([
                 updateNodeData(d, meta.history[meta.currentCopy].data);
             }
             function updateNodeData(nodeData, newData){
-				if (nodeData.value instanceof Array){
-					nodeData.value.splice(0, nodeData.value.length);
-					newData.forEach(function(d){
-						nodeData.value.push(d);
-					})
-				}
-				else {					
-					ui.utils.each.call(nodeData.value, function(d, i){
-						delete nodeData.value[i];
-					})
-					ui.utils.extend.call(nodeData.value, newData)
+                if (nodeData.value instanceof Array){
+                    nodeData.value.splice(0, nodeData.value.length);
+                    newData.forEach(function(d){
+                        nodeData.value.push(d);
+                    })
+                }
+                else {                    
+                    ui.utils.each.call(nodeData.value, function(d, i){
+                        delete nodeData.value[i];
+                    })
+                    ui.utils.extend.call(nodeData.value, newData)
                 }
                 dispatch.call("edit");
                 self.update();
@@ -1273,7 +1273,7 @@ define([
             config = config || {};
             ObjectEditor.call(this, config);
         }
-		function ReqursiveXml(config){ 
+        function ReqursiveXml(config){ 
             config || (config = {});
             var data = config.data || {}; 
             ui.Template.call(this, {factory:"ReqursiveXml"}); 
@@ -1295,46 +1295,46 @@ define([
             this.elements.wrap.childs.nodes.childs.closeName = new ui.Node({node:"span", ref:"closeName"});  
             this.elements.wrap.childs.nodes.childs.closeEnd = new ui.Node({node:"span", ref:"closeEnd"}); 
             this.updateRef(); 
-			this.ref.nodes.data.array = function() { return data.childNodes?Array.prototype.filter.call(data.childNodes, function(d){ return d.localName&&d.localName != ""}):[] };
+            this.ref.nodes.data.array = function() { return data.childNodes?Array.prototype.filter.call(data.childNodes, function(d){ return d.localName&&d.localName != ""}):[] };
             this.ref.arrow.enter.html = ui.symbols.utf8.arrow.right; 
-			this.ref.arrow.update.style.display = function(d, i) { return d.childNodes.length?"inline":"none" }
+            this.ref.arrow.update.style.display = function(d, i) { return d.childNodes.length?"inline":"none" }
             this.ref.openStart.enter.html = "<";
             this.ref.openName.update.html = function(d, i) { return d.localName };
             this.ref.openEnd.enter.html = ">";
             this.ref.closeStart.enter.html = "</";
             this.ref.closeName.update.html = function(d, i) { return d.localName };
             this.ref.closeEnd.enter.html = ">";
-			this.ref.attribute.data.array = function(d, i) { return d.attributes || [] };
-			this.ref.attrName.update.html = function(d, i) { return d.nodeName };
-			this.ref.attrSeparator.enter.html = "=";
-			this.ref.openQuote.enter.html = '"';
-			this.ref.attrValue.update.html = function(d, i) { return d.nodeValue };
-			this.ref.closeQuote.enter.html = '"';
+            this.ref.attribute.data.array = function(d, i) { return d.attributes || [] };
+            this.ref.attrName.update.html = function(d, i) { return d.nodeName };
+            this.ref.attrSeparator.enter.html = "=";
+            this.ref.openQuote.enter.html = '"';
+            this.ref.attrValue.update.html = function(d, i) { return d.nodeValue };
+            this.ref.closeQuote.enter.html = '"';
             var baseUpdate = this.update; 
             this.update = function(config){ 
                 config || (config = {});
                 data = config.data || data; 
                 baseUpdate.call(this); 
             }; 
-			var contentNode = this.ref.content;
+            var contentNode = this.ref.content;
             this.ref.arrow.enter.on.click = function(d, i){ 
                 var contentDom = d3.select(this.parentNode).select(contentNode.selector).node(); 
-				if (contentDom.uiChild instanceof HiddenXml){ 
-					contentDom.uiChild.exit(); 
-					contentDom.uiChild = new ReqursiveXml({data:d}); 
-					contentDom.uiChild.enter(contentDom); 
-					contentDom.uiChild.update({data:d});
-					contentDom.style.display = "block";
-					this.innerHTML = ui.symbols.utf8.arrow.down;
-				} 
-				else if (contentDom.uiChild instanceof ReqursiveXml){ 
-					contentDom.uiChild.exit(); 
-					contentDom.uiChild = new HiddenXml({data:d}); 
-					contentDom.uiChild.enter(contentDom); 
-					contentDom.uiChild.update({data:d.value});
-					contentDom.style.display = "inline-block"; 
-					this.innerHTML = ui.symbols.utf8.arrow.right;
-				} 
+                if (contentDom.uiChild instanceof HiddenXml){ 
+                    contentDom.uiChild.exit(); 
+                    contentDom.uiChild = new ReqursiveXml({data:d}); 
+                    contentDom.uiChild.enter(contentDom); 
+                    contentDom.uiChild.update({data:d});
+                    contentDom.style.display = "block";
+                    this.innerHTML = ui.symbols.utf8.arrow.down;
+                } 
+                else if (contentDom.uiChild instanceof ReqursiveXml){ 
+                    contentDom.uiChild.exit(); 
+                    contentDom.uiChild = new HiddenXml({data:d}); 
+                    contentDom.uiChild.enter(contentDom); 
+                    contentDom.uiChild.update({data:d.value});
+                    contentDom.style.display = "inline-block"; 
+                    this.innerHTML = ui.symbols.utf8.arrow.right;
+                } 
             } 
             this.ref.content.update.style.display = function(d, i){ 
                 if (this.uiChild instanceof ReqursiveXml){ 
@@ -1344,9 +1344,9 @@ define([
             } 
             this.ref.content.on.enter = function(){ 
                 this.entered.each(function(d, i){ 
-					this.uiChild = new HiddenXml({data:d}); 
-					this.uiChild.enter(this); 
-					this.uiChild.update({data:d});
+                    this.uiChild = new HiddenXml({data:d}); 
+                    this.uiChild.enter(this); 
+                    this.uiChild.update({data:d});
                 }) 
             } 
             this.ref.content.on.update = function(){ 
@@ -1355,7 +1355,7 @@ define([
                 }) 
             } 
         } 
-		function HiddenXml(config){ 
+        function HiddenXml(config){ 
             var data = config.data || {}; 
             ui.Template.call(this, {factory:"HiddenXml"}); 
             this.elements.hidden = new ui.Node({node:"span", ref:"hidden"}); 
@@ -1410,7 +1410,7 @@ define([
             function uiRotatingCircles(config){
                 if (typeof config === "undefined") config = {};
                 var self = this;
-                var timeout;	
+                var timeout;    
                 var alpha;
                 var viewport = new ui.models.Viewport;
                 var circle = { radius:0 };
@@ -1827,7 +1827,7 @@ define([
                     var n = viewport.n;
                     var m = viewport.m;
                     var i = Math.floor( index / n );    //номер строки
-                    var j = index % n;	                //номер столбца
+                    var j = index % n;                    //номер столбца
                     var width = cell.width;     
                     var height = cell.height; 
                     var left = width * j;
@@ -1962,7 +1962,7 @@ define([
                 var i = typeMap[type];
                 types[i].state.start = start;
                 types[i].state.end = end;
-            	installCalendar(types[i], i);
+                installCalendar(types[i], i);
                 setDateRange(start, end);
             }
 
@@ -2369,12 +2369,12 @@ define([
             layout.elements.container = new ui.Node( {ref:'container'} );
             layout.updateRef();           
             
-	        layout.ref.container.enter.style = {
-	            'background-color': '#fff',
-	            'display': 'block',
-	            'padding': '4px',
-	            'box-shadow': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)'
-	        };
+            layout.ref.container.enter.style = {
+                'background-color': '#fff',
+                'display': 'block',
+                'padding': '4px',
+                'box-shadow': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)'
+            };
 
 
             var menu = new uiCalendarTable({module:config.module});
@@ -2946,14 +2946,14 @@ define([
             this.projectY = this.project.bind(this, "y");
             this.style = function(){
                 return {
-					"transform-origin":"0 0",
-					transform:"translate(" + transform.x + "px, " + transform.y + "px)"+"scale(" + transform.k + ")"
-				};
+                    "transform-origin":"0 0",
+                    transform:"translate(" + transform.x + "px, " + transform.y + "px)"+"scale(" + transform.k + ")"
+                };
             }
             this.attr = function(){
                 return {
-					transform:"translate(" + transform.x + ", " + transform.y + ")"+"scale(" + transform.k + ")"
-				}					;
+                    transform:"translate(" + transform.x + ", " + transform.y + ")"+"scale(" + transform.k + ")"
+                }                    ;
             }
             function zoomed(){
                 transform = d3.event.transform;
@@ -3182,9 +3182,9 @@ define([
             tNodes.ref.node.data.array = model.uiTemplates.nodes;
             tNodes.ref.node.enter.style.position = "absolute";
             tNodes.ref.factory.update.html = function(d, i){
-				if (d.meta.path == ".Root.Layout.ReqursiveObject.ReqursiveObject.ReqursiveObject.ReqursiveObject.HiddenObject"){
-					var a = 1;
-				}
+                if (d.meta.path == ".Root.Layout.ReqursiveObject.ReqursiveObject.ReqursiveObject.ReqursiveObject.HiddenObject"){
+                    var a = 1;
+                }
                 return d.currentNode.uiTemplate.factory + " - instance count: " + d.values.length;
             }
             tNodes.ref.nest.root.update.style.display = function(d) {return d.values.length > 1?"block":"none"};
@@ -3192,20 +3192,20 @@ define([
                 return "current instance: {id:" + d.currentNode.uiTemplate.id + ", i:" +d.meta.selected + "}" };
             tNodes.ref.nest.dec.enter.on.click = function(d) { d.prevNode() };
             tNodes.ref.nest.inc.enter.on.click = function(d) { 
-				if (d.meta.path == ".Root.Layout.ReqursiveObject.ReqursiveObject.ReqursiveObject.ReqursiveObject.HiddenObject"){
-					var a = 1;
-				}
-				d.nextNode() 
-			};
+                if (d.meta.path == ".Root.Layout.ReqursiveObject.ReqursiveObject.ReqursiveObject.ReqursiveObject.HiddenObject"){
+                    var a = 1;
+                }
+                d.nextNode() 
+            };
             tNodes.ref.node.update.style.left = function(d) { return d.x - d.width*0.5 + "px" };
             tNodes.ref.node.update.style.top = function(d) { return d.y + "px" };
             tNodes.ref.node.update.style.width = function(d) { return d.width + "px"};
             tNodes.ref.node.update.style.height = function(d) { 
-				if (d.meta.path == ".Root.Layout.ReqursiveObject.ReqursiveObject.ReqursiveObject.ReqursiveObject.HiddenObject"){
-					var a = 1;
-				}
-				return d.height + "px"
-			};
+                if (d.meta.path == ".Root.Layout.ReqursiveObject.ReqursiveObject.ReqursiveObject.ReqursiveObject.HiddenObject"){
+                    var a = 1;
+                }
+                return d.height + "px"
+            };
             model.on("update.tNodes", tNodes.update);
 
             var nNodes = new Nodes({module:"TemplateTree", factory:"Nodes"});
@@ -3227,13 +3227,13 @@ define([
             this.dNodes = dNodes;
             dNodes.ref.node.enter.on.mouseenter = function(d, i){
                 d.element["_back"] = d.element.style["background-color"];
-				d.element.style["background-color"] = "#CCCCCC";
+                d.element.style["background-color"] = "#CCCCCC";
             }
             dNodes.ref.node.enter.on.mouseleave = function(d, i){
                 d.element.style["background-color"] = d.element["_back"];
                 delete d.element["_back"];
             }
-			/*
+            /*
             var visibleNode;
             function showNode(d){
                 visibleNode = {context:this, d:d};
@@ -3606,30 +3606,30 @@ define([
                 }
                 templateNestData.push(this);
                 
-				Object.defineProperty(this, "selectedIndex", {
-					set:function(value){
+                Object.defineProperty(this, "selectedIndex", {
+                    set:function(value){
                         var storedMeta = templateNestMeta.get(this.meta.path);
-						if (storedMeta.selected == value) return;
-						storedMeta.selected = value;
-						if (storedMeta.selected >= this.values.length) storedMeta.selected = 0;
-						if (storedMeta.selected < 0) storedMeta.selected = this.values.length - 1;
-					},
+                        if (storedMeta.selected == value) return;
+                        storedMeta.selected = value;
+                        if (storedMeta.selected >= this.values.length) storedMeta.selected = 0;
+                        if (storedMeta.selected < 0) storedMeta.selected = this.values.length - 1;
+                    },
                     get:function() { 
                         //return this.values[this.meta.selected] 
                         var storedMeta = templateNestMeta.get(this.meta.path);
-						if (storedMeta.selected >= this.values.length) storedMeta.selected = this.values.length - 1;
-						return storedMeta.selected;
+                        if (storedMeta.selected >= this.values.length) storedMeta.selected = this.values.length - 1;
+                        return storedMeta.selected;
                     }
-				});
+                });
                 Object.defineProperty(this, "currentNode", {
                     set:function(){},
                     get:function() { 
                         //return this.values[this.meta.selected] 
-						var current = this.values[this.selectedIndex];
+                        var current = this.values[this.selectedIndex];
                         if (typeof current === "undefined"){
-							debugger;
-						}
-						return current;
+                            debugger;
+                        }
+                        return current;
                     }
                 })     
                 this.currentNode.uiTemplate[meta] = {nestId:this.meta.path};
@@ -3660,7 +3660,7 @@ define([
                 rootTemplates.forEach(calcTemplateSize);
                 calcTemplatePos(undefined, rootTemplates);
 
-                dispatch.call("update");			
+                dispatch.call("update");            
             };
             function calcTemplateLevels(template){
                 template.levels = [];
@@ -3735,8 +3735,8 @@ define([
                     }
                     var firstLevel = template.levels[0];
                     if (firstLevel){
-                        calcNodePos({x:template.x, y:template.y + tProp.padding - nProp.h - nProp.dy}, firstLevel);			
-                    }	
+                        calcNodePos({x:template.x, y:template.y + tProp.padding - nProp.h - nProp.dy}, firstLevel);            
+                    }    
                     calcTemplatePos(template, template.childs);
                     X += template.size + tProp.dx; 
                 })
@@ -3745,7 +3745,7 @@ define([
                 var levelWidth = nodes.reduce(function(prev, curr){ 
                     return prev + curr.size + nProp.dx 
                 }, -nProp.dx);
-                var X = parent.x - levelWidth*0.5;	
+                var X = parent.x - levelWidth*0.5;    
                 nodes.forEach(function(node) { 
                     node.y = parent.y + nProp.h + nProp.dy;
                     node.x = X + node.size*0.5;
@@ -3942,7 +3942,7 @@ define([
             this.on = dispatch.on.bind(dispatch);
             this.setRoot = function(_root) { 
                 root = _root;
-                this.update();		
+                this.update();        
             };
             this.update = function() {
                 
@@ -3965,7 +3965,7 @@ define([
                 rootTemplates.forEach(calcTemplateSize);
                 calcTemplatePos(undefined, rootTemplates);
 
-                dispatch.call("update");			
+                dispatch.call("update");            
             };
             function calcTemplateLevels(template){
                 template.levels = [];
@@ -4032,8 +4032,8 @@ define([
                     template.x = X + template.size*0.5;
                     var firstLevel = template.levels[0];
                     if (firstLevel){
-                        calcNodePos({x:template.x, y:template.y + tProp.padding - nProp.h - nProp.dy}, firstLevel);			
-                    }	
+                        calcNodePos({x:template.x, y:template.y + tProp.padding - nProp.h - nProp.dy}, firstLevel);            
+                    }    
                     calcTemplatePos(template, template.childs);
                     X += template.size + tProp.dx; 
                 })
@@ -4042,7 +4042,7 @@ define([
                 var levelWidth = nodes.reduce(function(prev, curr){ 
                     return prev + curr.size + nProp.dx 
                 }, -nProp.dx);
-                var X = parent.x - levelWidth*0.5;	
+                var X = parent.x - levelWidth*0.5;    
                 nodes.forEach(function(node) { 
                     node.y = parent.y + nProp.h + nProp.dy;
                     node.x = X + node.size*0.5;
@@ -4176,9 +4176,9 @@ define([
             }
         }
         function concater(separator){
-			separator = separator || "";
-			return function(prev, curr){ return prev + separator + curr };
-		}
+            separator = separator || "";
+            return function(prev, curr){ return prev + separator + curr };
+        }
         this.IndexedArray = IndexedArray;
         function IndexedArray(config){
             config = config || {};
@@ -4263,11 +4263,11 @@ define([
         this.utf8.arrow.down = "&#x25BC";
     }
     
-	function patchD3(d3){
+    function patchD3(d3){
         d3.selection.prototype.apply = apply;
-		d3.selection.prototype.applyAll = applyAll;
-		d3.transition.prototype.apply = apply;
-		d3.transition.prototype.applyAll = applyAll;
+        d3.selection.prototype.applyAll = applyAll;
+        d3.transition.prototype.apply = apply;
+        d3.transition.prototype.applyAll = applyAll;
         d3.dispatch.prototype.addEvent = addEvent;
         function addEvent(name){
             this["_"][name] = [];            

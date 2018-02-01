@@ -20,25 +20,25 @@
 }
 
 @keyframes uiPulseScale{
-	0% { transform: scale(0.1) }
-	10% { transform: scale(1) }
-	100% { transform: scale(0.1) }
+    0% { transform: scale(0.1) }
+    10% { transform: scale(1) }
+    100% { transform: scale(0.1) }
 }
 [d3ui-module=TemplateTree][d3ui-factory=Templates][d3ui-node=node]{
-	position:absolute;
-	border:1px solid black;
-	background-color:white;
+    position:absolute;
+    border:1px solid black;
+    background-color:white;
 }
 [d3ui-module=TemplateTree][d3ui-factory=Nodes][d3ui-node=node]{
-	position:absolute;
-	border:1px solid black;
-	background-color:white;
+    position:absolute;
+    border:1px solid black;
+    background-color:white;
 }
 [d3ui-module=TemplateTree][d3ui-factory=Dom][d3ui-node=node]{
-	position:absolute;
-	border:1px solid black;
-	border-radius:10px;
-	background-color:white;
+    position:absolute;
+    border:1px solid black;
+    border-radius:10px;
+    background-color:white;
 }
 [d3ui-factory=Tooltip][d3ui-node=content]{
     white-space:nowrap;
@@ -50,24 +50,24 @@
     z-index:4000;
 }
 [d3ui-factory=ReqursiveObject][d3ui-node=fields]{
-	padding:0px 0px 0px 15px;
+    padding:0px 0px 0px 15px;
 }
 [d3ui-factory=ReqursiveObject][d3ui-node=arrow]{
-	cursor:pointer;
+    cursor:pointer;
 }
 [d3ui-factory=ReqursiveObject][d3ui-node=key]{
-	color:rgb(136,19,145);
+    color:rgb(136,19,145);
 }
 [d3ui-factory=ReqursiveObject][d3ui-node=constructor]{
-	margin:0px 0px 0px 5px;
-	color:rgb(26,26,166);
+    margin:0px 0px 0px 5px;
+    color:rgb(26,26,166);
 }
 
 [d3ui-factory=ObjectEditor][d3ui-node=fields]{
-	padding:0px 0px 0px 15px;
+    padding:0px 0px 0px 15px;
 }
 [d3ui-factory=ObjectEditor][d3ui-node=arrow]{
-	cursor:pointer;
+    cursor:pointer;
 }
 [d3ui-factory=ObjectEditor][d3ui-node=remove],
 [d3ui-factory=DataEditor][d3ui-node=prev],
@@ -109,14 +109,14 @@
     content:">";
 }
 [d3ui-factory=ObjectEditor][d3ui-node=key]{
-	color:rgb(136,19,145);
+    color:rgb(136,19,145);
 }
 [d3ui-factory=ObjectEditor][d3ui-node=constructor]{
-	margin:0px 0px 0px 5px;
-	color:rgb(26,26,166);
+    margin:0px 0px 0px 5px;
+    color:rgb(26,26,166);
 }
 [d3ui-factory=ReqursiveXml][d3ui-node=nodes]{
-	padding:0px 0px 0px 15px;
+    padding:0px 0px 0px 15px;
 }
 [d3ui-factory=ReqursiveXml][d3ui-node=openStart],
 [d3ui-factory=ReqursiveXml][d3ui-node=openName],
@@ -124,144 +124,144 @@
 [d3ui-factory=ReqursiveXml][d3ui-node=closeStart],
 [d3ui-factory=ReqursiveXml][d3ui-node=closeName],
 [d3ui-factory=ReqursiveXml][d3ui-node=closeEnd]{
-	color:rgb(136,18,128);
+    color:rgb(136,18,128);
 }
 [d3ui-factory=ReqursiveXml][d3ui-node=attrName]{
-	color:rgb(179,69,0);
+    color:rgb(179,69,0);
 }
 [d3ui-factory=ReqursiveXml][d3ui-node=openQuote],
 [d3ui-factory=ReqursiveXml][d3ui-node=closeQuote]{
-	color:black;
+    color:black;
 }
 [d3ui-factory=ReqursiveXml][d3ui-node=attrValue]{
-	color:rgb(26,26,166);
+    color:rgb(26,26,166);
 }
 
 [d3ui-factory=ReqursiveXml][d3ui-node=attribute]{
-	margin:0px 0px 0px 5px;
+    margin:0px 0px 0px 5px;
 }
 [d3ui-factory=ReqursiveXml][d3ui-node=arrow]{
-	cursor:pointer;
+    cursor:pointer;
 }
 /*BEGIN 
 uiCalendarDateRange*/
 [d3ui-factory=DropButton][d3ui-node=button]{
-	vertical-align:middle;
+    vertical-align:middle;
     text-align:center;
-	cursor: pointer;
+    cursor: pointer;
 }
 [d3ui-factory=DropButton][d3ui-node=drop]{
-	position: absolute;
-	z-index: 100;
+    position: absolute;
+    z-index: 100;
 }
 [d3ui-factory=DropButton][d3ui-node=label]{
-	-ms-user-select: none;
-	user-select: none;
-	color: #197bb1;
-	font-family: pt-sans-regular;
-	font-size: 16px;
-	text-decoration: none;
-	cursor: pointer;
-	border-bottom: 1px;
-	border-bottom-style: dashed;
+    -ms-user-select: none;
+    user-select: none;
+    color: #197bb1;
+    font-family: pt-sans-regular;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 1px;
+    border-bottom-style: dashed;
 }
 [d3ui-factory=DropButton][d3ui-node=icon]{
-	vertical-align: top;
-	padding: 3px 0px 0px 5px;
+    vertical-align: top;
+    padding: 3px 0px 0px 5px;
 }
 [d3ui-factory=uiCalendarPanel][d3ui-node=panel]{
-	display: flex;
-	flex-flow: column nowrap;
-	justify-content: space-around;
-	align-items: center;
-	font-family: pt-sans-regular;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+    align-items: center;
+    font-family: pt-sans-regular;
 }
 [d3ui-factory=uiCalendarPanel][d3ui-node=button]{
-	font-weight: normal;
-	font-size: 14px;
+    font-weight: normal;
+    font-size: 14px;
 }
 [d3ui-factory=uiCalendarPanel][d3ui-node=button].selected{
-	border: 2px solid #fea300;
+    border: 2px solid #fea300;
 }
 [d3ui-factory=uiCalendarPanel][d3ui-node=button]:focus{
-	border: 2px solid #fea300;
-	box-shadow: none;
+    border: 2px solid #fea300;
+    box-shadow: none;
 }
 [d3ui-factory=uiCalendarPanel][d3ui-node=panel]>[d3ui-node=button]{
-	padding-left: 10px;
+    padding-left: 10px;
 }
 
 [d3ui-factory=uiCalendarDateRange][d3ui-node=container]{
-	background-color: #fff;
+    background-color: #fff;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 [d3ui-factory=uiCalendarTable][d3ui-node=table]{
-	-ms-user-select: none;
-	user-select: none;
-	cursor: pointer;
-	font-family: pt-sans-regular;
-	background-color: #fff;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    font-family: pt-sans-regular;
+    background-color: #fff;
 }
 
 
 [d3ui-factory=DropButton][d3ui-node=drop]>[d3ui-factory=uiCalendarTable][d3ui-node=table]{
-	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 [d3ui-factory=uiCalendarTable][d3ui-node=year]>[d3ui-node=cells],
 [d3ui-factory=uiCalendarTable][d3ui-node=month]>[d3ui-node=cells],
 [d3ui-factory=uiCalendarTable][d3ui-node=weekdays]>[d3ui-node=cells],
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days]{
-	padding: 2px 7.5px;
-	border: none;
+    padding: 2px 7.5px;
+    border: none;
 }
 /*
 [d3ui-factory=uiCalendarTable][d3ui-node=month]>[d3ui-node=cells]{
-	border: none;
+    border: none;
 }
 
 [d3ui-factory=uiCalendarTable][d3ui-node=weekdays]>[d3ui-node=cells]{
-	border: none;
+    border: none;
 }
 */
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days]{
-	text-align: center;
-	vertical-align: middle;
-	line-height: 1;
-	border: none;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1;
+    border: none;
 }
 
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days].selected{
-	background: #b5e1ca;
+    background: #b5e1ca;
 }
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days].selected:hover{
-	background: #b5e1ca;
-	opacity: 0.8;
+    background: #b5e1ca;
+    opacity: 0.8;
 }
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days]:not(.selected){
-	background: #fff;
+    background: #fff;
 }
 
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days].between{
-	background: #b5e1ca;
-	opacity: 0.4;
+    background: #b5e1ca;
+    opacity: 0.4;
 }
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days].between:hover{
-	opacity: 1;
+    opacity: 1;
 }
 
 [d3ui-factory=uiCalendarTable][d3ui-node=weeks]>[d3ui-node=days]:hover{
-	background: #eee;
+    background: #eee;
 }
 
 /*END
 uiCalendarDateRange*/
 .onlyTable{
-	-ms-user-select: none;
-	user-select: none;
-	cursor: pointer;
-	font-family: pt-sans-regular;
-	background-color: #fff;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    font-family: pt-sans-regular;
+    background-color: #fff;
     display: inline-block;
     padding: 4px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
@@ -270,11 +270,11 @@ uiCalendarDateRange*/
 /*BEGIN 
 uiCalendarMonth*/
 [d3ui-factory=uiMonthTable][d3ui-node=table]{
-	-ms-user-select: none;
-	user-select: none;
-	cursor: pointer;
-	font-family: pt-sans-regular;
-	background-color: #fff;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    font-family: pt-sans-regular;
+    background-color: #fff;
     display: inline-block;
     padding: 4px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
@@ -282,22 +282,22 @@ uiCalendarMonth*/
 
 [d3ui-factory=uiMonthTable][d3ui-node=year]>[d3ui-node=cells],
 [d3ui-factory=uiMonthTable][d3ui-node=quarters]>[d3ui-node=months]{
-	padding: 3px 7.5px;
-	border: none;
+    padding: 3px 7.5px;
+    border: none;
 }
 
 [d3ui-factory=uiMonthTable][d3ui-node=quarters]>[d3ui-node=months].selected{
-	background: #b5e1ca;
+    background: #b5e1ca;
 }
 [d3ui-factory=uiMonthTable][d3ui-node=quarters]>[d3ui-node=months].selected:hover{
-	background: #b5e1ca;
-	opacity: 0.8;
+    background: #b5e1ca;
+    opacity: 0.8;
 }
 [d3ui-factory=uiMonthTable][d3ui-node=quarters]>[d3ui-node=months]:not(.selected){
-	background: #fff;
+    background: #fff;
 }
 [d3ui-factory=uiMonthTable][d3ui-node=quarters]>[d3ui-node=months]:not(.selected):hover{
-	background: #eee;
+    background: #eee;
 }
 
 /*END
@@ -306,41 +306,41 @@ uiCalendarMonth*/
 /*BEGIN 
 uiCalendarQuarter*/
 [d3ui-factory=uiQuarterTable][d3ui-node=table]{
-	-ms-user-select: none;
-	user-select: none;
-	cursor: pointer;
-	font-family: pt-sans-regular;
-	background-color: #fff;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    font-family: pt-sans-regular;
+    background-color: #fff;
     display: inline-block;
     padding: 4px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 [d3ui-factory=uiQuarterTable][d3ui-node=yearTD]{
-	padding: 0px;
-	border: none;
+    padding: 0px;
+    border: none;
 }
 
 [d3ui-factory=uiQuarterTable][d3ui-node=year],
 [d3ui-factory=uiQuarterTable][d3ui-node=year]>[d3ui-node=cells],
 [d3ui-factory=uiQuarterTable][d3ui-node=halfYears],
 [d3ui-factory=uiQuarterTable][d3ui-node=halfYears]>[d3ui-node=quarters]{
-	padding: 3px 7.5px;
-	border: none;
+    padding: 3px 7.5px;
+    border: none;
 }
 
 [d3ui-factory=uiQuarterTable][d3ui-node=halfYears]>[d3ui-node=quarters].selected{
-	background: #b5e1ca;
+    background: #b5e1ca;
 }
 [d3ui-factory=uiQuarterTable][d3ui-node=halfYears]>[d3ui-node=quarters].selected:hover{
-	background: #b5e1ca;
-	opacity: 0.8;
+    background: #b5e1ca;
+    opacity: 0.8;
 }
 [d3ui-factory=uiQuarterTable][d3ui-node=halfYears]>[d3ui-node=quarters]:not(.selected){
-	background: #fff;
+    background: #fff;
 }
 [d3ui-factory=uiQuarterTable][d3ui-node=halfYears]>[d3ui-node=quarters]:not(.selected):hover{
-	background: #eee;
+    background: #eee;
 }
 /*END
 uiCalendarQuarter*/

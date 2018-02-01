@@ -15,7 +15,7 @@ function (
      * Конструктор метаданных экстеншена
      @constructor
     */
-	function ExtensionMeta(){
+    function ExtensionMeta(){
         /**
          * Реестр экземпляров экстеншена
          @private
@@ -104,17 +104,17 @@ function (
             //sheets.ref.title.enter.html = "Лист";
             
             var sheetTools = new ToolNode({
-				tools:["save", "reload"]
-			})
-			sheetTools.childs.save.enter.on.click = function() {
-				var d = model.objects.selectedItem;
-				model.sheets.setProperties(d);
-			}
-			sheetTools.childs.reload.enter.on.click = function() {
-				var d = model.objects.selectedItem;
-				model.sheets.getProperties(d);
-			}
-			sheets.ref.body.childs.tools = sheetTools;
+                tools:["save", "reload"]
+            })
+            sheetTools.childs.save.enter.on.click = function() {
+                var d = model.objects.selectedItem;
+                model.sheets.setProperties(d);
+            }
+            sheetTools.childs.reload.enter.on.click = function() {
+                var d = model.objects.selectedItem;
+                model.sheets.getProperties(d);
+            }
+            sheets.ref.body.childs.tools = sheetTools;
             
             model.apps.on("reload.sheets", sheets.update);
             model.sheets.on("load.sheets", sheets.update);
@@ -160,19 +160,19 @@ function (
                 module:module
             });
             objects.ref.head.update.classed.hide = function() { return model.objects.properties.array == 0 };
-			var objectTools = new ToolNode({
-				tools:["save", "reload"]
-			})
-			objectTools.childs.save.enter.on.click = function() {
-				var d = model.objects.selectedItem;
-				model.objects.setProperties(d);
-			}
-			objectTools.childs.reload.enter.on.click = function() {
-				var d = model.objects.selectedItem;
-				model.objects.getProperties(d);
-			}
-			objects.ref.body.childs.tools = objectTools;
-			//objects.ref.title.enter.html = "Объект";
+            var objectTools = new ToolNode({
+                tools:["save", "reload"]
+            })
+            objectTools.childs.save.enter.on.click = function() {
+                var d = model.objects.selectedItem;
+                model.objects.setProperties(d);
+            }
+            objectTools.childs.reload.enter.on.click = function() {
+                var d = model.objects.selectedItem;
+                model.objects.getProperties(d);
+            }
+            objects.ref.body.childs.tools = objectTools;
+            //objects.ref.title.enter.html = "Объект";
             model.apps.on("reload.objects", objects.update);
             model.objects.on("load.objects", objects.update);
             
@@ -293,23 +293,23 @@ function (
                 this.ref.head.childs.title = new ui.Node({node:"span", ref:"title"});
                 this.updateRef();
             }
-			function ToolNode(config){
-				config = config || {};
-				var tools = config.tools || [];
-				ui.Node.call(this, {
-					node:"div"
-				})
-				var self = this;
-				tools.forEach(function(d, i){
-					self.childs[d] = new ui.Node({node:"span", ref:"tools." + d});
-					self.childs[d].enter.attr.class = "lui-button";
-					self.childs[d].enter.html = d;
-				});
-			}
+            function ToolNode(config){
+                config = config || {};
+                var tools = config.tools || [];
+                ui.Node.call(this, {
+                    node:"div"
+                })
+                var self = this;
+                tools.forEach(function(d, i){
+                    self.childs[d] = new ui.Node({node:"span", ref:"tools." + d});
+                    self.childs[d].enter.attr.class = "lui-button";
+                    self.childs[d].enter.html = d;
+                });
+            }
 
             
         }
     }
-	return new ExtensionMeta;        
+    return new ExtensionMeta;        
 });
 
