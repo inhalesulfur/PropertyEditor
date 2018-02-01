@@ -1055,7 +1055,7 @@ define([
                 var fieldsDom = this.parentNode;
                 var wrapDom = fieldsDom.parentNode;
                 var editorNode = d3.select(wrapDom.parentNode).select(editor.selector);
-                var editorDom = d3.select(wrapDom.parentNode).select(editor.selector).node();
+                var editorDom = d3.select(wrapDom.parentNode).select(mirror.selector).node();
                 var editorData = editorNode.data()[0];
                 
                 var uiEditor = editorDom.uiEditor;
@@ -1210,12 +1210,12 @@ define([
             function nextCopy(d, i){
                 var meta = getMeta(d);
                 meta.currentCopy++;
-                updateNodeData(d, meta.history[meta.currentCopy]);
+                updateNodeData(d, meta.history[meta.currentCopy].data);
             }
             function prevCopy(d, i){
                 var meta = getMeta(d);
                 meta.currentCopy--;
-                updateNodeData(d, meta.history[meta.currentCopy]);
+                updateNodeData(d, meta.history[meta.currentCopy].data);
             }
             function updateNodeData(nodeData, newData){
 				if (nodeData.value instanceof Array){
@@ -1233,24 +1233,33 @@ define([
                 dispatch.call("edit");
                 self.update();
             }
+            function Copy(data){
+                this.data = {};
+                if (data instanceof Array){
+                    this.data = [].concat(data);
+                }
+                else{
+                    ui.utils.extend.call(this.data, data);
+                }
+            }
             function saveData(nodeData, newData){
-                var copy = ui.utils.extend.call({}, nodeData.value);
+                var copy = new Copy(nodeData.value);
                 var meta = getMeta(nodeData);
                 
-                if (JSON.stringify(newData) != JSON.stringify(meta.history[meta.history.length - 1])){
+                if (JSON.stringify(newData) != JSON.stringify(meta.history[meta.history.length - 1].data)){
                     if (meta.currentCopy != meta.history.length - 1){
                         var deleteStart = meta.currentCopy + 1;
                         var deleteCount = meta.history.length - 1 - meta.currentCopy;
                         meta.history.splice(deleteStart, deleteCount);
                     }
-                    meta.history.push(newData);
+                    meta.history.push(new Copy(newData));
                     meta.currentCopy = meta.history.length - 1;
                 }
                 
                 updateNodeData(nodeData, newData);
             }
             function createMeta(d){
-                var copy = ui.utils.extend.call({}, d.value);
+                var copy = new Copy(d.value);
                 d[metaField] = d[metaField] || {history:[copy], currentCopy:0};
             }
             function getMeta(d){
