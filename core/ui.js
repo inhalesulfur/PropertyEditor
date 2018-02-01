@@ -886,6 +886,7 @@ define([
                             this.uiChild = new HiddenObject(); 
                             this.uiChild.enter(this); 
                             this.uiChild.update();
+                            this.style.display = "inline-block"; 
                             d3.select(this.parentNode).select(arrowNode.selector).html(ui.symbols.utf8.arrow.right); 
 						}
 					}
@@ -895,6 +896,7 @@ define([
                             this.uiChild = new HiddenObject(); 
                             this.uiChild.enter(this); 
                             this.uiChild.update();
+                            this.style.display = "inline-block"; 
                             d3.select(this.parentNode).select(arrowNode.selector).html(ui.symbols.utf8.arrow.right); 
                         }
                         else if (this.uiChild instanceof HiddenObject){
@@ -921,6 +923,7 @@ define([
                     else{ 
                         if (this.uiChild instanceof constructors.Primitive){
                             this.uiChild.update();
+                            this.style.display = "inline-block"; 
                         }
                         else{ 
                             this.uiChild.exit(); 
@@ -1007,29 +1010,43 @@ define([
             };
             config.factory = "ObjectEditor";
             ui.templates.ReqursiveObject.call(this, config);
+            var showTools = false;
             var self = this;
             var wrap = this.ref.wrap;
             var fields = wrap.childs.fields;
             var remove = new ui.Node({node:"span"});
-            remove.enter.attr.class = "lui-button";
+            remove.enter.classed["lui-button"] = true;
+            remove.update.classed["hide"] = function() { return !showTools };
             remove.enter.on.click = removeField;
             fields.childs.remove = remove;
             var editor = new ui.Node();
+            editor.childs.tools = new ToolNode({
+                tools:["toogleTools"]
+            }); 
+            var mirror = new ui.Node();
+            editor.childs.mirror = mirror;
+            var toogle = editor.childs.tools.childs.toogleTools
+            toogle.enter.classed["lui-button"] = true;
+            toogle.update.classed["lui-button--success"] = function() { return showTools };
+            toogle.enter.on.click = function(){
+                showTools = !showTools;
+                self.update();
+            };
             this.elements.setBefore("wrap", "editor", editor);
             
-            editor.on.enter = function(){
+            mirror.on.enter = function(){
                 this.entered.each(function(d, i){
                     var uiEditor = new DataEditorWrap();
                     uiEditor.enter(this);
                     this.uiEditor = uiEditor;
                 })
             }
-            editor.on.update = function(){
+            mirror.on.update = function(){
                 this.selection.each(function(d, i){
                     this.uiEditor.update();
                 })
             }
-            editor.on.exit = function(){
+            mirror.on.exit = function(){
                 this.exited.each(function(d, i){
                     delete this.uiEditor;
                 })
@@ -1056,6 +1073,7 @@ define([
                 DataEditor.call(this, {
                     factory:"DataEditor"
                 });
+                this.tools.editor.update.classed["hide"] = function() { return !showTools };
                 this.on("enter", function(){
                     wrap.selection.style("display", "none");
                 })
@@ -1099,6 +1117,10 @@ define([
             var mirrowTools = new ToolNode({
                 tools:["parse", "cancel"]
             });
+            this.tools = {
+                editor:editorTools,
+                mirrow:mirrowTools
+            }
             var input = new ui.Node();
             var wrap = new ui.Node();
             this.elements.wrap = wrap;
@@ -1214,13 +1236,16 @@ define([
             function saveData(nodeData, newData){
                 var copy = ui.utils.extend.call({}, nodeData.value);
                 var meta = getMeta(nodeData);
-                if (meta.currentCopy != meta.history.length - 1){
-                    var deleteStart = meta.currentCopy + 1;
-                    var deleteCount = meta.history.length - 1 - meta.currentCopy;
-                    meta.history.splice(deleteStart, deleteCount);
+                
+                if (JSON.stringify(newData) != JSON.stringify(meta.history[meta.history.length - 1])){
+                    if (meta.currentCopy != meta.history.length - 1){
+                        var deleteStart = meta.currentCopy + 1;
+                        var deleteCount = meta.history.length - 1 - meta.currentCopy;
+                        meta.history.splice(deleteStart, deleteCount);
+                    }
+                    meta.history.push(newData);
+                    meta.currentCopy = meta.history.length - 1;
                 }
-                meta.history.push(newData);
-                meta.currentCopy = meta.history.length - 1;
                 
                 updateNodeData(nodeData, newData);
             }

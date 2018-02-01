@@ -15,6 +15,9 @@
 .popUp2 {
     z-index:10002 !important;
 }
+.hide{
+    display:none !important;
+}
 
 @keyframes uiPulseScale{
 	0% { transform: scale(0.1) }
@@ -73,8 +76,13 @@
 [d3ui-factory=DataEditor][d3ui-node=copy],
 [d3ui-factory=DataEditor][d3ui-node=upload],
 [d3ui-factory=DataEditor][d3ui-node=parse],
-[d3ui-factory=DataEditor][d3ui-node=cancel]{
+[d3ui-factory=DataEditor][d3ui-node=cancel],
+[d3ui-factory=ObjectEditor][d3ui-node=toogleTools]{
     padding:0px 3px 0px 3px;
+}
+
+[d3ui-factory=ObjectEditor][d3ui-node=toogleTools]:after{
+    content:"tools";
 }
 [d3ui-factory=ObjectEditor][d3ui-node=remove]:after{
     content:"x";

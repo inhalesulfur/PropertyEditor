@@ -15,7 +15,6 @@ define([
 	function Model(){
 		var apps = new Apps;
         var sheets = new PropertyList({
-            qIdAccessor:function(d) { return d.qId }
         });
         sheets.on("load.setDefaultSheet", function(){
             var currSheetId = qlik.navigation.getCurrentSheetId().sheetId;
@@ -28,20 +27,20 @@ define([
             }
         })
         var objects = new PropertyList({
-            qIdAccessor:function(d) { return d.name }
         });
         objects.on("load.setDefaultObject", function(){
             objects.selectItem(0);
         })
         sheets.on("change.loadObjects", function(){
-            var objectInfos = this.qProp.cells;
+            var objectInfos = this.qProp.cells.map(function(d) { return d.name });
             objects.upload(objectInfos);
         })
         
         apps.on("openapp", function(){
-            var sheetInfos = this.qTypes.get("sheet").qInfos;
+            var sheetInfos = this.qTypes.get("sheet").qInfos.map(function(d) { return d.qId });
             sheets.setApi(this.api);
             objects.setApi(this.api);
+            
             sheets.upload(sheetInfos);
         })
         apps.update();
@@ -61,7 +60,7 @@ define([
          * selectstream - выбор потока
          * selectapp - выбор приложения, начало загрузки приложения
          * openapp - окончание загрузки приложения
-         * error - ошибка QlikEngine API
+         * error - ошибка в промисе
         */
         this.on = dispatch.on.bind(dispatch);
         var streams = [];
@@ -88,9 +87,9 @@ define([
                     })
                     return stream;
                 });
-				dispatch.call("load");
                 var currStream = apps.get(currApp.id).stream;
 				selectStream(currStream.index);
+				dispatch.call("load");
 			})
 		}
         this.selectStream = selectStream;
@@ -108,12 +107,12 @@ define([
             currentApp && (delete currentApp.api);
             currentApp = currentStream.apps.array[index];
             currentApp.index = index;
-            currentApp.api = new QlikEngine("ws://"+origin+"/app/"+encodeURIComponent(currentApp.qDocId));
+            currentApp.api = new QlikEngine(currentApp.qDocId);
             var qDocId = currentApp.qDocId;
             dispatch.call("selectapp");
             currentApp.api.OpenDoc(currentApp.qDocId).then(openApp)
-            .catch(function(e){
-                dispatch.call("error", e);
+			.catch(function(e){
+                dispatch.call("error", new ModelError(e));
             });
             function openApp(){
                 if (currentApp.qDocId != qDocId) return;
@@ -143,7 +142,9 @@ define([
             get:function() { return currentApp || {}}
         });
         Object.defineProperty(this, "currentStream", {
-            get:function() { return currentStream || {}}
+            get:function() { 
+                return currentStream || {}
+            }
         });
         
     }
@@ -168,7 +169,7 @@ define([
         var self = this;
         var qIdAccessor = config.qIdAccessor || function(d) { return d };
         var uploadFunc = config.uploadFunc || "GetObjectProperties";
-        var properties = new ui.utils.IndexedArray({ index:function(d) { return qIdAccessor(d) } });
+        var properties = new ui.utils.IndexedArray({ index:function(d) { return d.qId } });
         var dispatch = d3.dispatch("load", "error");
         this.dispatch = dispatch;
         /**
@@ -181,7 +182,7 @@ define([
         this.setApi = function(value) { api = value };
         this.upload = function(qInfos){
             properties.clear();
-            properties.concat(qInfos);
+            properties.concat(qInfos.map(function(d) { return {qId:qIdAccessor(d), qProp:{}}}));
             var queue = qInfos.map(function(d) {
                 return api[uploadFunc](qIdAccessor(d));
             });
@@ -193,32 +194,42 @@ define([
                 })
                 dispatch.call("load", properties);
             })
-            .catch(function(e){
-                dispatch.call("error", e);
+			.catch(function(e){
+                dispatch.call("error", new ModelError(e));
             });
         }
 		this.setProperties = function(d){
-			var id = qIdAccessor(d);
+			var id = d.qId;
 			api.SetObjectProperties(id, d.qProp)
 			.catch(function(e){
-                dispatch.call("error", e);
+                dispatch.call("error", new ModelError(e));
             });
 		}
 		this.getProperties = function(d){
-			var id = qIdAccessor(d);
+			var id = d.qId;
 			api.GetObjectProperties(id)
 			.then(function(reply){
 				d.qProp = reply.qProp;
                 dispatch.call("load", properties);
 			})
 			.catch(function(e){
-                dispatch.call("error", e);
+                dispatch.call("error", new ModelError(e));
             });
 		}
         Object.defineProperty(this, "properties", {
             get:function() { return properties}
         });
-        
+        function ModelError(e){
+            if (e instanceof Error){
+                this.message = e.message;
+                this.stack = e.stack;
+                this.type = e.constructor;
+            }
+            else{
+                ui.utils.extend.call(this, e);
+            }
+            
+        }
     }
     return Model;
 });

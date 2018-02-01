@@ -59,7 +59,7 @@ function (
             var streamSelect = new ui.templates.SelectBox({module:module});
             //streamSelect.ref.select.enter.attr.class = "lui-select";
             streamSelect.ref.select.enter.on.change = function() { model.apps.selectStream(this.selectedIndex) };
-            streamSelect.ref.select.update.property.selectedIndex = function() { model.apps.currentStream.index };
+            streamSelect.ref.select.update.property.selectedIndex = function() { return model.apps.currentStream.index };
             streamSelect.ref.option.data.array = function() { return model.apps.streamList };
             streamSelect.ref.option.update.html = function(d, i) { return d.name };
             model.apps.on("load.streamSelect", streamSelect.update);
@@ -67,7 +67,7 @@ function (
             var appSelect = new ui.templates.SelectBox({module:module});
             //appSelect.ref.select.enter.attr.class = "lui-select";
             appSelect.ref.select.enter.on.change = function() { model.apps.selectApp(this.selectedIndex) };
-            appSelect.ref.select.update.property.selectedIndex = function() { model.apps.currentApp.index };
+            appSelect.ref.select.update.property.selectedIndex = function() { return model.apps.currentApp.index };
             appSelect.ref.option.data.array = function() { return model.apps.appList };
             appSelect.ref.option.update.html = function(d, i) { return d.qDocName };
             model.apps.on("selectstream.appSelect", appSelect.update);
@@ -102,6 +102,20 @@ function (
             });
             sheets.ref.head.update.classed.hide = function() { return model.sheets.properties.array == 0 };
             //sheets.ref.title.enter.html = "Лист";
+            
+            var sheetTools = new ToolNode({
+				tools:["save", "reload"]
+			})
+			sheetTools.childs.save.enter.on.click = function() {
+				var d = model.objects.selectedItem;
+				model.sheets.setProperties(d);
+			}
+			sheetTools.childs.reload.enter.on.click = function() {
+				var d = model.objects.selectedItem;
+				model.sheets.getProperties(d);
+			}
+			sheets.ref.body.childs.tools = sheetTools;
+            
             model.apps.on("reload.sheets", sheets.update);
             model.sheets.on("load.sheets", sheets.update);
             
@@ -146,18 +160,18 @@ function (
                 module:module
             });
             objects.ref.head.update.classed.hide = function() { return model.objects.properties.array == 0 };
-			var tools = new ToolNode({
+			var objectTools = new ToolNode({
 				tools:["save", "reload"]
 			})
-			tools.childs.save.enter.on.click = function() {
+			objectTools.childs.save.enter.on.click = function() {
 				var d = model.objects.selectedItem;
 				model.objects.setProperties(d);
 			}
-			tools.childs.reload.enter.on.click = function() {
+			objectTools.childs.reload.enter.on.click = function() {
 				var d = model.objects.selectedItem;
 				model.objects.getProperties(d);
 			}
-			objects.ref.body.childs.tools = tools;
+			objects.ref.body.childs.tools = objectTools;
 			//objects.ref.title.enter.html = "Объект";
             model.apps.on("reload.objects", objects.update);
             model.objects.on("load.objects", objects.update);

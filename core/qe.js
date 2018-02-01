@@ -4,11 +4,22 @@ define([
 	qlik
 ) {
     'use strict';
-	function QlikEngine(_origin){
+    var config = {
+        host: window.location.host,
+        protocol: window.location.protocol === "https:"?"wss:":"ws:"
+    };
+	function QlikEngine(appId){
 		var callbacks;
 		var socket;
 		var id = 0;
-		var origin = _origin || qlik.currApp().global.session.cacheName;
+		var origin;
+        
+        if (appId){
+            origin = config.protocol+"//"+config.host+"/app/"+encodeURIComponent(appId)
+        }  
+        else {
+            origin = qlik.currApp().global.session.cacheName;
+        }
 		var connected = false;
 		var status;
 		var api = this;
@@ -117,25 +128,25 @@ define([
 		}
 		this.GetMeasureProperties = function (id){
 			return api.GetMeasure(id).then(function(reply){
-				if (reply.qReturn.qHandle == null) return {error:"null handle"};
+				if (reply.qReturn.qHandle == null) return promiseReject({error:"null handle", qId:id, reply:reply});
 				else return api.GetProperties(reply.qReturn.qHandle)
 			})	
 		}
 		this.GetObjectProperties = function (id){
 			return api.GetObject(id).then(function(reply){
-				if (reply.qReturn.qHandle == null) return {error:"null handle"};
+				if (reply.qReturn.qHandle == null) return promiseReject({error:"null handle", qId:id, reply:reply});
 				else return api.GetProperties(reply.qReturn.qHandle)
 			})	
 		}
 		this.SetObjectProperties = function (id, qProp){
 			return api.GetObject(id).then(function(reply){
-				if (reply.qReturn.qHandle == null) return {error:"null handle"};
+				if (reply.qReturn.qHandle == null) return promiseReject({error:"null handle", qId:id, reply:reply});
 				else return api.SetProperties(reply.qReturn.qHandle, qProp)
 			})	
 		}
 		this.GetDimensionProperties = function (id){
 			return api.GetDimension(id).then(function(reply){
-				if (reply.qReturn.qHandle == null) return {error:"null handle"};
+				if (reply.qReturn.qHandle == null) return promiseReject({error:"null handle", qId:id, reply:reply});
 				else return api.GetProperties(reply.qReturn.qHandle)
 			})	
 		}
@@ -154,6 +165,11 @@ define([
 				"qProp": qProp
 			});
 		}
+        function promiseReject(e){
+            return new Promise(function(resolve, reject){
+                reject(e);
+            })            
+        }
 	}
     return QlikEngine;
 });
